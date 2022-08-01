@@ -4,6 +4,8 @@
 # .tfstate files
 *.tfstate
 *.tfstate.*
+*.terraform.lock*
+*.terraform*
 
 # Crash log files
 crash.log
@@ -34,3 +36,5 @@ override.tf.json
 # secret keys
 key*
 variables*
+meta.txt
+init.sh

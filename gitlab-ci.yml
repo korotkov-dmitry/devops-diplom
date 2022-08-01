@@ -1,0 +1,15 @@
+before_script:
+  - eval $(ssh-agent -s)
+  - echo "$ssh_key" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+
+stages:         
+  - deploy
+
+deploy-job:      
+  stage: deploy
+  script:
+    - ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@app.korotkovdmitry.ru sudo chown ubuntu /var/www/www.korotkovdmitry.ru.net/wordpress/ -R
+    - rsync -vz -e "ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null" ./* ubuntu@app.korotkovdmitry.ru:/var/www/www.korotkovdmitry.ru.net/wordpress/
+    - ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null ubuntu@app.korotkovdmitry.ru sudo chown www-data /var/www/www.korotkovdmitry.ru.net/wordpress/ -R

@@ -1,0 +1,78 @@
+---
+- name: Security Settings And Install Grafana For RedHat
+  block:
+    - name: Allow Ports
+      firewalld:
+        port: '3000/tcp'
+        permanent: true
+        state: enabled
+      notify:
+        - firewalld systemd restart
+
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: Stop SELinux
+      shell: setenforce 0
+      ignore_errors: true
+
+    - name: Add Repository
+      yum_repository:
+        name: Grafana
+        description: Grafana YUM repo
+        baseurl: https://packages.grafana.com/oss/rpm
+        gpgkey: https://packages.grafana.com/gpg.key
+        gpgcheck: yes
+        sslverify: yes
+        sslcacert: /etc/pki/tls/certs/ca-bundle.crt
+
+    - name: Install Grafana on RedHat Family
+      yum:
+        name: grafana
+        state: present
+      notify:
+        - grafana systemd
+  when:
+    ansible_os_family == "RedHat"
+
+- name: Security Settings And Install Grafana For Debian
+  block:
+    - name: Allow TCP Ports
+      iptables:
+        chain: INPUT
+        rule_num: '1'
+        action: insert
+        protocol: tcp
+        jump: ACCEPT
+        destination_port: '3000'
+
+    - name: Import Grafana Apt Key
+      apt_key:
+        url: https://packages.grafana.com/gpg.key
+        state: present
+
+    - name: Add APT Repository
+      apt_repository:
+        repo: deb https://packages.grafana.com/oss/deb stable main
+        state: present
+
+    - name: Install Grafana on Debian Family
+      apt:
+        name: grafana
+        state: present
+      notify:
+        - grafana systemd
+  when:
+    ansible_os_family == "Debian"
+
+- name: Add node_exporter dashboard
+  retries: 5
+  delay: 2
+  community.grafana.grafana_dashboard:
+    grafana_url: http://{{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] }}:3000
+    grafana_user: "admin"
+    grafana_password: "admin"
+    dashboard_id: 1860
+    dashboard_revision: 27
+  ignore_errors: true

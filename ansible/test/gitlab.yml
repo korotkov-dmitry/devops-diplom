@@ -1,0 +1,14 @@
+- hosts: gitlab 
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+  roles:
+   - gitlab
+
+  environment:
+    http_proxy: http://korotkovdmitry.ru:8118
+    https_proxy: http://korotkovdmitry.ru:8118
+    GITLAB_ROOT_PASSWORD: "{{ gitlab_initial_root_password }}"
+    GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN: "{{ gitlab_runners_registration_token }}"

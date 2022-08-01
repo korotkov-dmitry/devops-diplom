@@ -1,0 +1,80 @@
+- hosts: nginx
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+  roles:
+   - install_nginx_letsencrypt
+   - install_proxy
+
+- hosts: mysql_db01 mysql_db02
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+  roles:
+   - install_mysql
+
+- hosts: app
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+   
+  roles:
+    - wordpress
+
+- hosts: gitlab 
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+  roles:
+   - gitlab
+
+  environment:
+    http_proxy: http://korotkovdmitry.ru:8118
+    https_proxy: http://korotkovdmitry.ru:8118
+    GITLAB_ROOT_PASSWORD: "{{ gitlab_initial_root_password }}"
+    GITLAB_SHARED_RUNNERS_REGISTRATION_TOKEN: "{{ gitlab_runners_registration_token }}"
+
+- hosts: runner
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+
+  roles:
+   - gitlab-runner
+
+  environment:
+     http_proxy: http://korotkovdmitry.ru:8118
+     https_proxy: http://korotkovdmitry.ru:8118
+
+- hosts: MySQL app gitlab runner monitoring
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+  roles:
+   - install_node_exporter
+
+- hosts: monitoring
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+  roles:
+   - monitoring
+   - grafana
+
+  environment:
+     http_proxy: http://korotkovdmitry.ru:8118
+     https_proxy: http://korotkovdmitry.ru:8118

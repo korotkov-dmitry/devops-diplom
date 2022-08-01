@@ -1,0 +1,68 @@
+server_tokens off;
+
+server {
+    listen 80;
+    server_name {{ domain_name }};
+
+    location /.well-known/acme-challenge {
+        root /var/www/letsencrypt;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        rewrite ^ https://{{ domain_name }}$request_uri? permanent;
+    }
+}
+
+server {
+    listen 80;
+    server_name gitlab.korotkovdmitry.ru;
+
+    location /.well-known/acme-challenge {
+        root /var/www/letsencrypt;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        rewrite ^ https://gitlab.korotkovdmitry.ru$request_uri? permanent;
+    }
+}
+server {
+    listen 80;
+    server_name grafana.korotkovdmitry.ru;
+
+    location /.well-known/acme-challenge {
+        root /var/www/letsencrypt;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        rewrite ^ https://grafana.korotkovdmitry.ru$request_uri? permanent;
+    }
+}
+server {
+    listen 80;
+    server_name prometheus.korotkovdmitry.ru;
+
+    location /.well-known/acme-challenge {
+        root /var/www/letsencrypt;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        rewrite ^ https://prometheus.korotkovdmitry.ru$request_uri? permanent;
+    }
+}
+server {
+    listen 80;
+    server_name alertmanager.korotkovdmitry.ru;
+
+    location /.well-known/acme-challenge {
+        root /var/www/letsencrypt;
+        try_files $uri $uri/ =404;
+    }
+
+    location / {
+        rewrite ^ https://alertmanager.korotkovdmitry.ru$request_uri? permanent;
+    }
+}

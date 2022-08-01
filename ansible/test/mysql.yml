@@ -1,0 +1,12 @@
+- hosts: mysql_db01 mysql_db02
+  gather_facts: true
+  become: true
+  become_method: sudo
+  become_user: root
+  remote_user: ubuntu
+  roles:
+   - install_mysql
+  
+  #environment:
+  #   http_proxy: http://korotkovdmitry.ru:8118
+  #   https_proxy: http://korotkovdmitry.ru:8118

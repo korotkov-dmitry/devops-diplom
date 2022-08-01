@@ -1,0 +1,43 @@
+[nginx]
+korotkovdmitry.ru letsencrypt_email=korotkovdmitry4andex@yandex.ru domain_name=korotkovdmitry.ru
+#[nginx:vars]
+#ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q ubuntu@korotkovdmitry.ru -o StrictHostKeyChecking=no"'
+
+[mysql_db01]
+db01.korotkovdmitry.ru mysql_server_id=1 mysql_replication_role=master
+[mysql_db01:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q ubuntu@korotkovdmitry.ru -o StrictHostKeyChecking=no"'
+
+[mysql_db02]
+db02.korotkovdmitry.ru mysql_server_id=2 mysql_replication_role=slave
+[mysql_db02:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q ubuntu@korotkovdmitry.ru -o StrictHostKeyChecking=no"'
+
+[app]
+app.korotkovdmitry.ru
+[app:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q ubuntu@korotkovdmitry.ru -o StrictHostKeyChecking=no"'
+
+[gitlab]
+gitlab.korotkovdmitry.ru
+[gitlab:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q ubuntu@korotkovdmitry.ru -o StrictHostKeyChecking=no"'
+
+[runner]
+runner.korotkovdmitry.ru
+[runner:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q ubuntu@korotkovdmitry.ru -o StrictHostKeyChecking=no"'
+
+[monitoring]
+monitoring.korotkovdmitry.ru
+[monitoring:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ProxyCommand="ssh -W %h:%p -q ubuntu@korotkovdmitry.ru -o StrictHostKeyChecking=no"'
+
+[proxy]
+korotkovdmitry.ru
+
+
+
+
+
+

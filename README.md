@@ -45,6 +45,20 @@
 1. У вас есть доступ к личному кабинету на сайте регистратора.
 2. Вы зарезистрировали домен и можете им управлять (редактировать dns записи в рамках этого домена).
 
+#### Результат
+
+Для проекта был зарезирвирован статический IP адрес:
+
+<p align="center">
+  <img src="./img/YC_2.png">
+</p>
+
+Зарегистрированно доменное имя korotkovdmitry.ru. Добавлены ресурсные записи:
+
+<p align="center">
+  <img src="./img/DNS.png">
+</p>
+
 ### Создание инфраструктуры
 
 Для начала необходимо подготовить инфраструктуру в YC при помощи [Terraform](https://www.terraform.io/).
@@ -77,164 +91,38 @@
 1. Terraform сконфигурирован и создание инфраструктуры посредством Terraform возможно без дополнительных ручных действий.
 2. Полученная конфигурация инфраструктуры является предварительной, поэтому в ходе дальнейшего выполнения задания возможны изменения.
 
----
-### Установка Nginx и LetsEncrypt
+#### Результат
 
-Необходимо разработать Ansible роль для установки Nginx и LetsEncrypt.
+Для работы используется один workspace, 'stage'. 
 
-**Для получения LetsEncrypt сертификатов во время тестов своего кода пользуйтесь [тестовыми сертификатами](https://letsencrypt.org/docs/staging-environment/), так как количество запросов к боевым серверам LetsEncrypt [лимитировано](https://letsencrypt.org/docs/rate-limits/).**
+```
+vagrant@vagrant:/vagrant/terraform$ terraform workspace list
+  default
+* stage
+```
+Создан S3 bucket в YC:
 
-Рекомендации:
-  - Имя сервера: `you.domain`
-  - Характеристики: 2vCPU, 2 RAM, External address (Public) и Internal address.
+<p align="center">
+  <img src="./img/YC_1.png">
+</p>
 
-Цель:
+Конфигурации терраформ:
 
-1. Создать reverse proxy с поддержкой TLS для обеспечения безопасного доступа к веб-сервисам по HTTPS.
+ - [provider.tf](./terraform/provider.tf) - настройки подключения к провайдеру
+ - [network.tf](./terraform/image.tf) - создание сети и подсетей;
+ - [image.tf](./terraform/image.tf) - обявление образа для ВМ;
+ - [variables.tf](./terraform/variables.tf) - содержит переменные (добавлен в .gitignore)
+ - [nginx.tf](./terraform/nginx.tf) - создание основной ВМ
+ - [gitlab.tf](./terraform/gitlab.tf) - создание ВМ для gitlab
+ - [mysql.tf](./terraform/mysql.tf) - создание ВМ для mysql
+ - [runner.tf](./terraform/runner.tf) - создание ВМ для gitlab-runner
+ - [wordpress.tf](./terraform/wordpress.tf) - создание ВМ для wordpress
+ - [monitoring.tf](./terraform/monitoring.tf) - создание ВМ для систем мониторинга
+ - [ansible.tf](./terraform/ansible.tf) - нулевой ресурс для запуска плейбука ansible
 
-Ожидаемые результаты:
+Ансибл запускается через нулевой ресурс терраформа. Основная команда запуска 'ansible-playbook ..//ansible/playbook.yml -i ..//ansible/inventory'. В каталоге [test](./ansible/test) плэйбуки представлены по отдельным заданиям. Создание инфраструктуры и  установка приложений выполняется командой 'terraform apply -auto-approve'.
 
-1. В вашей доменной зоне настроены все A-записи на внешний адрес этого сервера:
-    - `https://www.you.domain` (WordPress)
-    - `https://gitlab.you.domain` (Gitlab)
-    - `https://grafana.you.domain` (Grafana)
-    - `https://prometheus.you.domain` (Prometheus)
-    - `https://alertmanager.you.domain` (Alert Manager)
-2. Настроены все upstream для выше указанных URL, куда они сейчас ведут на этом шаге не важно, позже вы их отредактируете и укажите верные значения.
-2. В браузере можно открыть любой из этих URL и увидеть ответ сервера (502 Bad Gateway). На текущем этапе выполнение задания это нормально!
-
-___
-### Установка кластера MySQL
-
-Необходимо разработать Ansible роль для установки кластера MySQL.
-
-Рекомендации:
-  - Имена серверов: `db01.you.domain` и `db02.you.domain`
-  - Характеристики: 4vCPU, 4 RAM, Internal address.
-
-Цель:
-
-1. Получить отказоустойчивый кластер баз данных MySQL.
-
-Ожидаемые результаты:
-
-1. MySQL работает в режиме репликации Master/Slave.
-2. В кластере автоматически создаётся база данных c именем `wordpress`.
-3. В кластере автоматически создаётся пользователь `wordpress` с полными правами на базу `wordpress` и паролем `wordpress`.
-
-**Вы должны понимать, что в рамках обучения это допустимые значения, но в боевой среде использование подобных значений не приемлимо! Считается хорошей практикой использовать логины и пароли повышенного уровня сложности. В которых будут содержаться буквы верхнего и нижнего регистров, цифры, а также специальные символы!**
-
-___
-### Установка WordPress
-
-Необходимо разработать Ansible роль для установки WordPress.
-
-Рекомендации:
-  - Имя сервера: `app.you.domain`
-  - Характеристики: 4vCPU, 4 RAM, Internal address.
-
-Цель:
-
-1. Установить [WordPress](https://wordpress.org/download/). Это система управления содержимым сайта ([CMS](https://ru.wikipedia.org/wiki/Система_управления_содержимым)) с открытым исходным кодом.
-
-
-По данным W3techs, WordPress используют 64,7% всех веб-сайтов, которые сделаны на CMS. Это 41,1% всех существующих в мире сайтов. Эту платформу для своих блогов используют The New York Times и Forbes. Такую популярность WordPress получил за удобство интерфейса и большие возможности.
-
-Ожидаемые результаты:
-
-1. Виртуальная машина на которой установлен WordPress и Nginx/Apache (на ваше усмотрение).
-2. В вашей доменной зоне настроена A-запись на внешний адрес reverse proxy:
-    - `https://www.you.domain` (WordPress)
-3. На сервере `you.domain` отредактирован upstream для выше указанного URL и он смотрит на виртуальную машину на которой установлен WordPress.
-4. В браузере можно открыть URL `https://www.you.domain` и увидеть главную страницу WordPress.
----
-### Установка Gitlab CE и Gitlab Runner
-
-Необходимо настроить CI/CD систему для автоматического развертывания приложения при изменении кода.
-
-Рекомендации:
-  - Имена серверов: `gitlab.you.domain` и `runner.you.domain`
-  - Характеристики: 4vCPU, 4 RAM, Internal address.
-
-Цель:
-1. Построить pipeline доставки кода в среду эксплуатации, то есть настроить автоматический деплой на сервер `app.you.domain` при коммите в репозиторий с WordPress.
-
-Подробнее об [Gitlab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/)
-
-Ожидаемый результат:
-
-1. Интерфейс Gitlab доступен по https.
-2. В вашей доменной зоне настроена A-запись на внешний адрес reverse proxy:
-    - `https://gitlab.you.domain` (Gitlab)
-3. На сервере `you.domain` отредактирован upstream для выше указанного URL и он смотрит на виртуальную машину на которой установлен Gitlab.
-3. При любом коммите в репозиторий с WordPress и создании тега (например, v1.0.0) происходит деплой на виртуальную машину.
-
-___
-### Установка Prometheus, Alert Manager, Node Exporter и Grafana
-
-Необходимо разработать Ansible роль для установки Prometheus, Alert Manager и Grafana.
-
-Рекомендации:
-  - Имя сервера: `monitoring.you.domain`
-  - Характеристики: 4vCPU, 4 RAM, Internal address.
-
-Цель:
-
-1. Получение метрик со всей инфраструктуры.
-
-Ожидаемые результаты:
-
-1. Интерфейсы Prometheus, Alert Manager и Grafana доступены по https.
-2. В вашей доменной зоне настроены A-записи на внешний адрес reverse proxy:
-  - `https://grafana.you.domain` (Grafana)
-  - `https://prometheus.you.domain` (Prometheus)
-  - `https://alertmanager.you.domain` (Alert Manager)
-3. На сервере `you.domain` отредактированы upstreams для выше указанных URL и они смотрят на виртуальную машину на которой установлены Prometheus, Alert Manager и Grafana.
-4. На всех серверах установлен Node Exporter и его метрики доступны Prometheus.
-5. У Alert Manager есть необходимый [набор правил](https://awesome-prometheus-alerts.grep.to/rules.html) для создания алертов.
-2. В Grafana есть дашборд отображающий метрики из Node Exporter по всем серверам.
-3. В Grafana есть дашборд отображающий метрики из MySQL (*).
-4. В Grafana есть дашборд отображающий метрики из WordPress (*).
-
-*Примечание: дашборды со звёздочкой являются опциональными заданиями повышенной сложности их выполнение желательно, но не обязательно.*
-
----
-## Что необходимо для сдачи задания?
-
-1. Репозиторий со всеми Terraform манифестами и готовность продемонстрировать создание всех ресурсов с нуля.
-2. Репозиторий со всеми Ansible ролями и готовность продемонстрировать установку всех сервисов с нуля.
-3. Скриншоты веб-интерфейсов всех сервисов работающих по HTTPS на вашем доменном имени.
-  - `https://www.you.domain` (WordPress)
-  - `https://gitlab.you.domain` (Gitlab)
-  - `https://grafana.you.domain` (Grafana)
-  - `https://prometheus.you.domain` (Prometheus)
-  - `https://alertmanager.you.domain` (Alert Manager)
-4. Все репозитории рекомендуется хранить на одном из ресурсов ([github.com](https://github.com) или [gitlab.com](https://gitlab.com)).
-
----
-## Как правильно задавать вопросы дипломному руководителю?
-
-**Что поможет решить большинство частых проблем:**
-
-1. Попробовать найти ответ сначала самостоятельно в интернете или в
-  материалах курса и ДЗ и только после этого спрашивать у дипломного
-  руководителя. Навык поиска ответов пригодится вам в профессиональной
-  деятельности.
-2. Если вопросов больше одного, то присылайте их в виде нумерованного
-  списка. Так дипломному руководителю будет проще отвечать на каждый из
-  них.
-3. При необходимости прикрепите к вопросу скриншоты и стрелочкой
-  покажите, где не получается.
-
-**Что может стать источником проблем:**
-
-1. Вопросы вида «Ничего не работает. Не запускается. Всё сломалось». Дипломный руководитель не сможет ответить на такой вопрос без дополнительных уточнений. Цените своё время и время других.
-2. Откладывание выполнения курсового проекта на последний момент.
-3. Ожидание моментального ответа на свой вопрос. Дипломные руководители работающие разработчики, которые занимаются, кроме преподавания, своими проектами. Их время ограничено, поэтому постарайтесь задавать правильные вопросы, чтобы получать быстрые ответы :)
-
-### Решение
-
-<details><summary>Полный вывод</summary>
+<details><summary>Полный вывод 'terraform apply -auto-approve'</summary>
 
 ```
 vagrant@vagrant:/vagrant/terraform$ terraform apply -auto-approve
@@ -2411,8 +2299,89 @@ Apply complete! Resources: 12 added, 0 changed, 0 destroyed.
 ```
 </details>
 
+Созданные ВМ:
 
-```
+<p align="center">
+  <img src="./img/YC.png">
+</p>
+
+---
+### Установка Nginx и LetsEncrypt
+
+Необходимо разработать Ansible роль для установки Nginx и LetsEncrypt.
+
+**Для получения LetsEncrypt сертификатов во время тестов своего кода пользуйтесь [тестовыми сертификатами](https://letsencrypt.org/docs/staging-environment/), так как количество запросов к боевым серверам LetsEncrypt [лимитировано](https://letsencrypt.org/docs/rate-limits/).**
+
+Рекомендации:
+  - Имя сервера: `you.domain`
+  - Характеристики: 2vCPU, 2 RAM, External address (Public) и Internal address.
+
+Цель:
+
+1. Создать reverse proxy с поддержкой TLS для обеспечения безопасного доступа к веб-сервисам по HTTPS.
+
+Ожидаемые результаты:
+
+1. В вашей доменной зоне настроены все A-записи на внешний адрес этого сервера:
+    - `https://www.you.domain` (WordPress)
+    - `https://gitlab.you.domain` (Gitlab)
+    - `https://grafana.you.domain` (Grafana)
+    - `https://prometheus.you.domain` (Prometheus)
+    - `https://alertmanager.you.domain` (Alert Manager)
+2. Настроены все upstream для выше указанных URL, куда они сейчас ведут на этом шаге не важно, позже вы их отредактируете и укажите верные значения.
+2. В браузере можно открыть любой из этих URL и увидеть ответ сервера (502 Bad Gateway). На текущем этапе выполнение задания это нормально!
+
+#### Результат
+
+
+<p align="center">
+  <img src="./img/BG.png">
+</p>
+
+<p align="center">
+  <img src="./img/BG_1.png">
+</p>
+
+<p align="center">
+  <img src="./img/BG_2.png">
+</p>
+
+<p align="center">
+  <img src="./img/BG_3.png">
+</p>
+
+<p align="center">
+  <img src="./img/BG_4.png">
+</p>
+
+<p align="center">
+  <img src="./img/BG_5.png">
+</p>
+
+___
+### Установка кластера MySQL
+
+Необходимо разработать Ansible роль для установки кластера MySQL.
+
+Рекомендации:
+  - Имена серверов: `db01.you.domain` и `db02.you.domain`
+  - Характеристики: 4vCPU, 4 RAM, Internal address.
+
+Цель:
+
+1. Получить отказоустойчивый кластер баз данных MySQL.
+
+Ожидаемые результаты:
+
+1. MySQL работает в режиме репликации Master/Slave.
+2. В кластере автоматически создаётся база данных c именем `wordpress`.
+3. В кластере автоматически создаётся пользователь `wordpress` с полными правами на базу `wordpress` и паролем `wordpress`.
+
+**Вы должны понимать, что в рамках обучения это допустимые значения, но в боевой среде использование подобных значений не приемлимо! Считается хорошей практикой использовать логины и пароли повышенного уровня сложности. В которых будут содержаться буквы верхнего и нижнего регистров, цифры, а также специальные символы!**
+
+### Результат
+
+``` 
 mysql> SHOW DATABASES;
 +--------------------+
 | Database           |
@@ -2448,6 +2417,77 @@ mysql> SELECT USER from mysql. user;
 +------------------+
 8 rows in set (0.00 sec)
 ```
+___
+### Установка WordPress
+
+Необходимо разработать Ansible роль для установки WordPress.
+
+Рекомендации:
+  - Имя сервера: `app.you.domain`
+  - Характеристики: 4vCPU, 4 RAM, Internal address.
+
+Цель:
+
+1. Установить [WordPress](https://wordpress.org/download/). Это система управления содержимым сайта ([CMS](https://ru.wikipedia.org/wiki/Система_управления_содержимым)) с открытым исходным кодом.
+
+
+По данным W3techs, WordPress используют 64,7% всех веб-сайтов, которые сделаны на CMS. Это 41,1% всех существующих в мире сайтов. Эту платформу для своих блогов используют The New York Times и Forbes. Такую популярность WordPress получил за удобство интерфейса и большие возможности.
+
+Ожидаемые результаты:
+
+1. Виртуальная машина на которой установлен WordPress и Nginx/Apache (на ваше усмотрение).
+2. В вашей доменной зоне настроена A-запись на внешний адрес reverse proxy:
+    - `https://www.you.domain` (WordPress)
+3. На сервере `you.domain` отредактирован upstream для выше указанного URL и он смотрит на виртуальную машину на которой установлен WordPress.
+4. В браузере можно открыть URL `https://www.you.domain` и увидеть главную страницу WordPress.
+---
+
+#### Результат
+
+<p align="center">
+  <img src="./img/wP.png">
+</p>
+
+<p align="center">
+  <img src="./img/wP_1.png">
+</p>
+
+### Установка Gitlab CE и Gitlab Runner
+
+Необходимо настроить CI/CD систему для автоматического развертывания приложения при изменении кода.
+
+Рекомендации:
+  - Имена серверов: `gitlab.you.domain` и `runner.you.domain`
+  - Характеристики: 4vCPU, 4 RAM, Internal address.
+
+Цель:
+1. Построить pipeline доставки кода в среду эксплуатации, то есть настроить автоматический деплой на сервер `app.you.domain` при коммите в репозиторий с WordPress.
+
+Подробнее об [Gitlab CI](https://about.gitlab.com/stages-devops-lifecycle/continuous-integration/)
+
+Ожидаемый результат:
+
+1. Интерфейс Gitlab доступен по https.
+2. В вашей доменной зоне настроена A-запись на внешний адрес reverse proxy:
+    - `https://gitlab.you.domain` (Gitlab)
+3. На сервере `you.domain` отредактирован upstream для выше указанного URL и он смотрит на виртуальную машину на которой установлен Gitlab.
+3. При любом коммите в репозиторий с WordPress и создании тега (например, v1.0.0) происходит деплой на виртуальную машину.
+
+#### Результат
+
+<p align="center">
+  <img src="./img/GL.png">
+</p>
+
+<p align="center">
+  <img src="./img/GL_1.png">
+</p>
+
+<p align="center">
+  <img src="./img/GL_3.png">
+</p>
+
+[gitlab-ci.yml](./gitlab-ci.yml)
 
 ```
 root@app:/var/www/www.korotkovdmitry.ru.net/wordpress# ls -la
@@ -2520,7 +2560,20 @@ root@app:/var/www/www.korotkovdmitry.ru.net/wordpress# git add .
 root@app:/var/www/www.korotkovdmitry.ru.net/wordpress# git commit -m 'init'
 ...
 root@app:/var/www/www.korotkovdmitry.ru.net/wordpress# git push --set-upstream origin master
+```
+<p align="center">
+  <img src="./img/GL_2.png">
+</p>
 
+<p align="center">
+  <img src="./img/GL_4.png">
+</p>
+
+<p align="center">
+  <img src="./img/GL_5.png">
+</p>
+
+```
 root@app:/var/www/www.korotkovdmitry.ru.net/wordpress# cat index.php
 <?php
 /**
@@ -2544,3 +2597,70 @@ define( 'WP_USE_THEMES', true );
 /** Loads the WordPress Environment and Template */
 require __DIR__ . '/wp-blog-header.php';
 ```
+___
+### Установка Prometheus, Alert Manager, Node Exporter и Grafana
+
+Необходимо разработать Ansible роль для установки Prometheus, Alert Manager и Grafana.
+
+Рекомендации:
+  - Имя сервера: `monitoring.you.domain`
+  - Характеристики: 4vCPU, 4 RAM, Internal address.
+
+Цель:
+
+1. Получение метрик со всей инфраструктуры.
+
+Ожидаемые результаты:
+
+1. Интерфейсы Prometheus, Alert Manager и Grafana доступены по https.
+2. В вашей доменной зоне настроены A-записи на внешний адрес reverse proxy:
+  - `https://grafana.you.domain` (Grafana)
+  - `https://prometheus.you.domain` (Prometheus)
+  - `https://alertmanager.you.domain` (Alert Manager)
+3. На сервере `you.domain` отредактированы upstreams для выше указанных URL и они смотрят на виртуальную машину на которой установлены Prometheus, Alert Manager и Grafana.
+4. На всех серверах установлен Node Exporter и его метрики доступны Prometheus.
+5. У Alert Manager есть необходимый [набор правил](https://awesome-prometheus-alerts.grep.to/rules.html) для создания алертов.
+2. В Grafana есть дашборд отображающий метрики из Node Exporter по всем серверам.
+3. В Grafana есть дашборд отображающий метрики из MySQL (*).
+4. В Grafana есть дашборд отображающий метрики из WordPress (*).
+
+*Примечание: дашборды со звёздочкой являются опциональными заданиями повышенной сложности их выполнение желательно, но не обязательно.*
+
+#### Результат
+
+<p align="center">
+  <img src="./img/GF.png">
+</p>
+
+<p align="center">
+  <img src="./img/GF_1.png">
+</p>
+
+<p align="center">
+  <img src="./img/GF_2.png">
+</p>
+
+<p align="center">
+  <img src="./img/GF_3.png">
+</p>
+
+<p align="center">
+  <img src="./img/PT.png">
+</p>
+
+<p align="center">
+  <img src="./img/AM.png">
+</p>
+
+---
+## Что необходимо для сдачи задания?
+
+1. Репозиторий со всеми Terraform манифестами и готовность продемонстрировать создание всех ресурсов с нуля.
+2. Репозиторий со всеми Ansible ролями и готовность продемонстрировать установку всех сервисов с нуля.
+3. Скриншоты веб-интерфейсов всех сервисов работающих по HTTPS на вашем доменном имени.
+  - `https://www.you.domain` (WordPress)
+  - `https://gitlab.you.domain` (Gitlab)
+  - `https://grafana.you.domain` (Grafana)
+  - `https://prometheus.you.domain` (Prometheus)
+  - `https://alertmanager.you.domain` (Alert Manager)
+4. Все репозитории рекомендуется хранить на одном из ресурсов ([github.com](https://github.com) или [gitlab.com](https://gitlab.com)).
