@@ -53,7 +53,7 @@
   <img src="./img/YC_2.png">
 </p>
 
-Зарегистрированно доменное имя korotkovdmitry.ru. Добавлены ресурсные записи:
+Зарегистрировано доменное имя korotkovdmitry.ru. Добавлены ресурсные записи:
 
 <p align="center">
   <img src="./img/DNS.png">
