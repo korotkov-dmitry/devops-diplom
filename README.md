@@ -235,6 +235,7 @@ ___
 ### Решение
 
 <details><summary>Полный вывод</summary>
+
 ```
 vagrant@vagrant:/vagrant/terraform$ terraform apply -auto-approve
 data.yandex_compute_image.image: Reading...
@@ -2409,6 +2410,7 @@ null_resource.playbook: Creation complete after 25m8s [id=7384201265079343389]
 Apply complete! Resources: 12 added, 0 changed, 0 destroyed.
 ```
 </details>
+
 
 ```
 mysql> SHOW DATABASES;
