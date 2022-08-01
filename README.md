@@ -2337,7 +2337,7 @@ ___
 ___
 #### Результат
 
-Установка происходит ролями `install_nginx_letsencrypt` и `install_proxy`. Для формирования тестовых сертификатов, применен параметр `--test-cert`.
+Установка происходит ролями [install_nginx_letsencrypt](./ansible/roles/install_nginx_letsencrypt/) и [install_proxy](./ansible/roles/install_proxy/). Для формирования тестовых сертификатов, применен параметр `--test-cert`.
 
 <p align="center">
   <img src="./img/BG.png">
@@ -2387,7 +2387,7 @@ ___
 ___
 ### Результат
 
-Установка происходит ролью `install_mysql`. Дополнительные параметря для mysql прописаны в [inventory](./ansible/inventory).
+Установка происходит ролью [install_mysql](./ansible/roles/install_mysql/). Дополнительные параметря для mysql прописаны в [inventory](./ansible/inventory).
 
 ``` 
 mysql> SHOW DATABASES;
@@ -2453,7 +2453,7 @@ ___
 ___
 #### Результат
 
-Установка происходит ролью `WordPress`. Выбран вариант с Apache.
+Установка происходит ролью [WordPress](./ansible/roles/wordpress/). Выбран вариант с Apache.
 
 <p align="center">
   <img src="./img/WP.png">
@@ -2488,7 +2488,7 @@ ___
 ___
 #### Результат
 
-Установка происходит ролями `gitlab` и `gitlab-runner`. Токен для gitlab-runner прописан через переменную `gitlab_runners_registration_token`, дополнительной регистрации ранера не требуется. Для деплоя реализован [gitlab-ci.yml](./gitlab-ci.yml).
+Установка происходит ролями [gitlab](./ansible/roles/gitlab/) и [gitlab-runner](./ansible/roles/gitlab-runner/). Токен для gitlab-runner прописан через переменную `gitlab_runners_registration_token`, дополнительной регистрации ранера не требуется. Для деплоя реализован [gitlab-ci.yml](./gitlab-ci.yml).
 
 <p align="center">
   <img src="./img/GL.png">
@@ -2642,7 +2642,7 @@ ___
 ___
 #### Результат
 
-Установка происходит ролями `install_node_exporter`, `monitoring` и `grafana`.
+Установка происходит ролями [install_node_exporter](./ansible/roles/install_node_exporter/), [monitoring](./ansible/roles/monitoring/) и [grafana](./ansible/roles/grafana/).
 
 <p align="center">
   <img src="./img/GF.png">
