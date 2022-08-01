@@ -2387,7 +2387,7 @@ ___
 ___
 ### Результат
 
-Установка происходит ролью [install_mysql](./ansible/roles/install_mysql/). Дополнительные параметря для mysql прописаны в [inventory](./ansible/inventory).
+Установка происходит ролью [install_mysql](./ansible/roles/install_mysql/). Дополнительные параметры для mysql прописаны в [inventory](./ansible/inventory).
 
 ``` 
 mysql> SHOW DATABASES;
