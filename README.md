@@ -95,7 +95,7 @@ ___
 ___
 #### Результат
 
-Для работы используется один workspace, 'stage'. 
+Для работы используется один workspace, `stage`. 
 
 ```
 vagrant@vagrant:/vagrant/terraform$ terraform workspace list
@@ -122,7 +122,7 @@ vagrant@vagrant:/vagrant/terraform$ terraform workspace list
  - [monitoring.tf](./terraform/monitoring.tf) - создание ВМ для систем мониторинга
  - [ansible.tf](./terraform/ansible.tf) - нулевой ресурс для запуска плейбука ansible
 
-Ансибл запускается через нулевой ресурс терраформа. Основная команда запуска `ansible-playbook ..//ansible/playbook.yml -i ..//ansible/inventory`. В каталоге [test](./ansible/test) плэйбуки представлены по отдельным заданиям. Создание инфраструктуры и  установка приложений выполняется командой `terraform apply -auto-approve`.
+Плэйбук [playbook](./ansible/playbook.yml) запускается через нулевой ресурс терраформа. Основная команда запуска `ansible-playbook ..//ansible/playbook.yml -i ..//ansible/inventory`. В каталоге [test](./ansible/test) плэйбуки представлены по отдельным заданиям. Полное создание инфраструктуры и установка всех приложений выполняется командой `terraform apply -auto-approve`.  
 
 <details><summary>Полный вывод `terraform apply -auto-approve`</summary>
 
