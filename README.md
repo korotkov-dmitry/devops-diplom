@@ -48,7 +48,7 @@
 ___
 #### Результат
 
-Для проекта был зарезирвирован статический IP адрес:
+Для проекта был зарезервирован статический IP адрес:
 
 <p align="center">
   <img src="./img/YC_2.png">
@@ -2336,6 +2336,8 @@ ___
 ___
 #### Результат
 
+Установка происходит ролями `install_nginx_letsencrypt` и `install_proxy`. Для формирования тестовых сертификатов, применен параметр `--test-cert`.
+
 <p align="center">
   <img src="./img/BG.png">
 </p>
@@ -2383,6 +2385,8 @@ ___
 
 ___
 ### Результат
+
+Установка происходит ролью `install_mysql`. Дополнительные параметря для mysql прописаны в [inventory](./ansible/inventory).
 
 ``` 
 mysql> SHOW DATABASES;
@@ -2448,6 +2452,8 @@ ___
 ___
 #### Результат
 
+Установка происходит ролью `WordPress`. Выбран вариант с Apache.
+
 <p align="center">
   <img src="./img/WP.png">
 </p>
@@ -2481,6 +2487,8 @@ ___
 ___
 #### Результат
 
+Установка происходит ролями `gitlab` и `gitlab-runner`. Токен для gitlab-runner прописан через переменную `gitlab_runners_registration_token`, дополнительной регистрации ранера не требуется. Для деплоя реализован [gitlab-ci.yml](./gitlab-ci.yml).
+
 <p align="center">
   <img src="./img/GL.png">
 </p>
@@ -2492,8 +2500,6 @@ ___
 <p align="center">
   <img src="./img/GL_3.png">
 </p>
-
-[gitlab-ci.yml](./gitlab-ci.yml)
 
 ```
 root@app:/var/www/www.korotkovdmitry.ru.net/wordpress# ls -la
@@ -2634,6 +2640,8 @@ ___
 
 ___
 #### Результат
+
+Установка происходит ролями `install_node_exporter`, `monitoring` и `grafana`.
 
 <p align="center">
   <img src="./img/GF.png">
